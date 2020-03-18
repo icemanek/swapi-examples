@@ -63,15 +63,35 @@ function App() {
         </FilterComponent>
 
         <div>Nested filters</div>
-        <FilterComponent title="Name" filter={filterCharactersByName}>
-          <FilterComponent
-            title="Page"
-            characters={characters}
-            filter={paginateCharacters(2)}
-          >
+        <FilterComponent
+          title="Name"
+          characters={characters}
+          filter={filterCharactersByName}
+        >
+          <FilterComponent title="Page" filter={paginateCharacters(2)}>
             <CharactersTable />
           </FilterComponent>
         </FilterComponent>
+
+        <div>Filters Chain</div>
+        <div>Nested filters</div>
+        <FilterChain
+          title="Name"
+          characters={characters}
+          filter={filterCharactersByName}
+        >
+          {startsWithName => (
+            <FilterChain
+              title="Page"
+              characters={startsWithName}
+              filter={paginateCharacters(2)}
+            >
+              {paginatedCharaters => (
+                <CharactersTable characters={paginatedCharaters} />
+              )}
+            </FilterChain>
+          )}
+        </FilterChain>
       </header>
     </div>
   );
@@ -141,10 +161,10 @@ const FilterComponent = ({
   characters,
   filter = id => id
 }) => {
-  const [pageNumber, setPageNumber] = useState();
+  const [inputValue, setInputValue] = useState();
 
   const filterChangedHandler = event => {
-    setPageNumber(event.target.value);
+    setInputValue(event.target.value);
   };
 
   return (
@@ -154,8 +174,26 @@ const FilterComponent = ({
         <input onChange={filterChangedHandler} />
       </div>
       {React.cloneElement(children, {
-        characters: filter(characters || children.props.characters, pageNumber)
+        characters: filter(characters || children.props.characters, inputValue)
       })}
+    </React.Fragment>
+  );
+};
+
+const FilterChain = ({ children, title, characters, filter = id => id }) => {
+  const [inputValue, setInputValue] = useState();
+
+  const filterChangedHandler = event => {
+    setInputValue(event.target.value);
+  };
+
+  return (
+    <React.Fragment>
+      <div>
+        {title}
+        <input onChange={filterChangedHandler} />
+      </div>
+      {children(filter(characters || children.props.characters, inputValue))}
     </React.Fragment>
   );
 };
