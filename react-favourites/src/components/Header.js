@@ -33,7 +33,7 @@ const Header = () => {
   return (
     <StyledHeader>
       <StyledImageContainer>
-        <img src="logo.svg" alt="" />
+        <img src="/logo.svg" alt="" />
       </StyledImageContainer>
       <StyledNavigation>
         <StyledAnchorLink exact as={NavLink} to="/">
