@@ -66,4 +66,14 @@ const GlobalStyle = createGlobalStyle`
   div {
     font-size: 1.6rem
   }
+  label.label {
+    color: ${variables.fontColor};
+    font-size: 2rem;
+  }
+  .checkbox {
+    font-size: 2rem;
+    &:hover {
+      color: ${variables.activeColor}
+    }
+  }
 `;

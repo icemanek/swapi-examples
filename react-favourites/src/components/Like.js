@@ -7,7 +7,7 @@ const Like = () => {
 
   return (
     <i
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer", color: "#E53A40" }}
       onClick={() => toggleLike(prevState => !prevState)}
       className={heartIcon}
     ></i>

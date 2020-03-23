@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Loading from "./Loading";
 import Like from "./Like";
+import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 const FilmList = () => {
@@ -12,10 +13,60 @@ const FilmList = () => {
       .then(data => setFilmList(data));
   }, []);
 
-  console.log(filmList);
   return (
-    <div>
+    <StyledWrapper>
       <h1>Film List</h1>
+      <div className="columns">
+        <div className="column">
+          <div className="field">
+            <label className="label">Wyszukaj po tytule</label>
+            <div className="control">
+              <input
+                className="input"
+                type="text"
+                placeholder="Wyszukaj po tytule"
+              />
+            </div>
+          </div>
+          <div className="field ">
+            <label className="label">Wyszukaj po dacie</label>
+            <div className="columns">
+              <div className="control column">
+                <label className="label">Od</label>
+                <input className="input" type="text" placeholder="Od" />
+              </div>
+              <div className="control column">
+                <label className="label">Do</label>
+                <input className="input" type="text" placeholder="Do" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field column">
+          <label className="label">Date picker</label>
+          <div className="control">
+            <input type="date" data-is-range="true" />
+          </div>
+        </div>
+        <div className="column">
+          <label className="label">Likes</label>
+          <div className="control">
+            <label className="checkbox">
+              <input type="checkbox" /> Liked
+            </label>
+            <label className="checkbox">
+              <input type="checkbox" /> Unliked
+            </label>
+          </div>
+        </div>
+        <div className="column">
+          <button className="button is-link is-light is-medium">1</button>
+          <button className="button is-link is-light is-medium">2</button>
+          <button className="button is-link is-light is-medium">3</button>
+          <button className="button is-link is-light is-medium">4</button>
+          <button className="button is-link is-light is-medium">5</button>
+        </div>
+      </div>
       {filmList ? (
         <table className="table is-striped is-hoverable is-fullwidth is-narrow">
           <thead>
@@ -49,17 +100,16 @@ const FilmList = () => {
                 </tr>
               ))}
           </tbody>
-          <tfoot>
-            <tr>
-              <td>Podsumowanie</td>
-            </tr>
-          </tfoot>
         </table>
       ) : (
         <Loading></Loading>
       )}
-    </div>
+    </StyledWrapper>
   );
 };
 
 export default FilmList;
+
+const StyledWrapper = styled.div`
+  padding-bottom: 10rem;
+`;
