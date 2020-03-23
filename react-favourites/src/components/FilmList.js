@@ -1,17 +1,33 @@
-import React, { useState, useEffect } from "react";
-import Loading from "./Loading";
-import Like from "./Like";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-const FilmList = () => {
-  const [filmList, setFilmList] = useState(null);
+import Like from "./Like";
+import Loading from "./Loading";
+import {useFilmReleaseOrdering} from './useOrdering';
 
+const FilmList = () => {
+  const [films, setFilms] = useState(undefined);
+  
   useEffect(() => {
-    fetch("https://swapi.co/api/films/")
-      .then(resp => resp.json())
-      .then(data => setFilmList(data));
+    fetch("https://swapi.co/api/films", { mode: "cors" })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error("Failed to fetch data from swapi");
+        }
+      })
+      .then(json => {
+        return json.results;
+      })
+      .then(setFilms)
+      .catch(err => {
+        console.log(err);
+      });
   }, []);
+
+  const changeSortOrder = useFilmReleaseOrdering(films, setFilms);
 
   return (
     <StyledWrapper>
@@ -67,7 +83,7 @@ const FilmList = () => {
           <button className="button is-link is-light is-medium">5</button>
         </div>
       </div>
-      {filmList ? (
+      {films ? (
         <table className="table is-striped is-hoverable is-fullwidth is-narrow">
           <thead>
             <tr>
@@ -77,13 +93,13 @@ const FilmList = () => {
               <th>Opening crawl</th>
               <th>Director</th>
               <th>Producer</th>
-              <th>Release Date</th>
+              <th onClick={() => changeSortOrder()}>Release Date</th>
               <th>Like</th>
             </tr>
           </thead>
           <tbody>
-            {filmList &&
-              filmList.results.map((el, index) => (
+            {films &&
+              films.map((el, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>
