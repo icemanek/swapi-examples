@@ -4,11 +4,43 @@ import { Link } from "react-router-dom";
 
 import Like from "./Like";
 import Loading from "./Loading";
-import {useFilmReleaseOrdering} from './useOrdering';
+import { useFilmReleaseOrdering } from "./useOrdering";
+
+const FilmListBody = ({ films, pageNo = 0, pageSize = 7 }) => {
+  
+  const mappedFilms = films.filter(
+    (_, index) => index >= pageNo * pageSize && index < (pageNo + 1) * pageSize
+  );
+
+  return (
+    <tbody>
+      {mappedFilms.map((el, index) => (
+        <tr key={el.episode_id}>
+          <td>
+            {el.isVisible} {index + 1}
+          </td>
+          <td>
+            <Link to={"/film-list/" + el.episode_id}>{el.title}</Link>
+          </td>
+          <td>{el.episode_id}</td>
+          <td>{el.opening_crawl}</td>
+          <td>{el.director}</td>
+          <td>{el.producer}</td>
+          <td>{el.release_date}</td>
+          <td>
+            <Like episodeId={el.episode_id}></Like>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  );
+};
 
 const FilmList = () => {
+  const [pageNo, changePage] = useState(0);
+
   const [films, setFilms] = useState(undefined);
-  
+
   useEffect(() => {
     fetch("https://swapi.co/api/films", { mode: "cors" })
       .then(response => {
@@ -76,11 +108,36 @@ const FilmList = () => {
           </div>
         </div>
         <div className="column">
-          <button className="button is-link is-light is-medium">1</button>
-          <button className="button is-link is-light is-medium">2</button>
-          <button className="button is-link is-light is-medium">3</button>
-          <button className="button is-link is-light is-medium">4</button>
-          <button className="button is-link is-light is-medium">5</button>
+          <button
+            className="button is-link is-light is-medium"
+            onClick={() => changePage(0)}
+          >
+            1
+          </button>
+          <button
+            className="button is-link is-light is-medium"
+            onClick={() => changePage(1)}
+          >
+            2
+          </button>
+          <button
+            className="button is-link is-light is-medium"
+            onClick={() => changePage(2)}
+          >
+            3
+          </button>
+          <button
+            className="button is-link is-light is-medium"
+            onClick={() => changePage(3)}
+          >
+            4
+          </button>
+          <button
+            className="button is-link is-light is-medium"
+            onClick={() => changePage(4)}
+          >
+            5
+          </button>
         </div>
       </div>
       {films ? (
@@ -88,34 +145,16 @@ const FilmList = () => {
           <thead>
             <tr>
               <th>#</th>
-              <th>Title</th>
-              <th>Episode ID</th>
-              <th>Opening crawl</th>
-              <th>Director</th>
-              <th>Producer</th>
-              <th onClick={() => changeSortOrder()}>Release Date</th>
+              <th onClick={() => changeSortOrder("title")}>Title</th>
+              <th onClick={() => changeSortOrder("episode_id")}>Episode ID</th>
+              <th onClick={() => changeSortOrder("opening_crawl")}>Opening crawl</th>
+              <th onClick={() => changeSortOrder("director")}>Director</th>
+              <th onClick={() => changeSortOrder("producer")}>Producer</th>
+              <th onClick={() => changeSortOrder("release_date")}>Release Date</th>
               <th>Like</th>
             </tr>
           </thead>
-          <tbody>
-            {films &&
-              films.map((el, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>
-                    <Link to={"/film-list/" + el.episode_id}>{el.title}</Link>
-                  </td>
-                  <td>{el.episode_id}</td>
-                  <td>{el.opening_crawl}</td>
-                  <td>{el.director}</td>
-                  <td>{el.producer}</td>
-                  <td>{el.release_date}</td>
-                  <td>
-                    <Like></Like>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
+          <FilmListBody films={films} pageNo={pageNo} />
         </table>
       ) : (
         <Loading></Loading>

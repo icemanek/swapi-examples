@@ -8,16 +8,24 @@ function getDateFromReleaseDate(a) {
   return new Date(a.release_date);
 }
 
-const getComparator = asc => (a, b) => {
-  return (
-    (asc ? -1 : 1) * (getDateFromReleaseDate(a) - getDateFromReleaseDate(b))
-  );
+const getComparator = sortObj => (a, b) => {
+  if (sortObj.property === "release_date") {
+    return (
+      (sortObj.asc ? -1 : 1) *
+      (getDateFromReleaseDate(a) - getDateFromReleaseDate(b))
+    );
+  } else {
+    return (
+      (sortObj.asc ? -1 : 1) *
+      `${a[sortObj.property]}`.localeCompare(`${b[sortObj.property]}`)
+    );
+  }
 };
 
-const isSorted = asc => (collectionOld, collectionSorted) => {
+const isSorted = sortObj => (collectionOld, collectionSorted) => {
   for (var i = 0; i < collectionOld.length; i++) {
     const result =
-      getComparator(asc)(collectionOld[i], collectionSorted[i]) === 0;
+      getComparator(sortObj)(collectionOld[i], collectionSorted[i]) === 0;
     if (!result) {
       return false;
     }
@@ -26,16 +34,23 @@ const isSorted = asc => (collectionOld, collectionSorted) => {
 };
 
 export const useFilmReleaseOrdering = (collection, setCollection) => {
-  const [asc, setAsc] = useState(true);
+  const [sortObj, setSortObj] = useState({
+    property: "release_date",
+    asc: true
+  });
 
   useEffect(() => {
     if (collection) {
-      const sortedCollection = [...collection].sort(getComparator(asc));
-      if (!isSorted(asc)(collection, sortedCollection)) {
+      const sortedCollection = [...collection].sort(getComparator(sortObj));
+      if (!isSorted(sortObj)(collection, sortedCollection)) {
         setCollection(sortedCollection);
       }
     }
-  }, [asc, collection]);
+  }, [sortObj, collection]);
 
-  return () => setAsc(s => !s);
+  return property => {
+    setSortObj(s => {
+      return { property, asc: !s.asc };
+    });
+  };
 };
