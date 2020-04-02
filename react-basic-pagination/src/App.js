@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 
 function App() {
@@ -25,7 +24,14 @@ function App() {
       });
   }, []);
 
-  const filterCharactersByName = (characters, inputValue) => {
+  const filterCharactersByNameIncludes = (characters, inputValue) => {
+    if (!inputValue || inputValue === "") {
+      return characters;
+    }
+    return characters.filter(c => c.name.includes(inputValue));
+  };
+
+  const filterCharactersByNameStartsWith = (characters, inputValue) => {
     if (!inputValue || inputValue === "") {
       return characters;
     }
@@ -54,22 +60,26 @@ function App() {
           <CharactersTable characters={characters} />
         </FilterComponent>
 
-        <FilterComponent filter={paginateCharacters(2)}>
+        <FilterComponent filter={paginateCharacters(4)}>
           <CharactersTable characters={characters} />
         </FilterComponent>
 
-        <FilterComponent filter={filterCharactersByName}>
+        <FilterComponent filter={filterCharactersByNameStartsWith}>
           <CharactersTable characters={characters} />
         </FilterComponent>
 
         <div>Nested filters</div>
         <FilterComponent
-          title="Name"
-          characters={characters}
-          filter={filterCharactersByName}
+          title="Name Includes"
+          filter={filterCharactersByNameIncludes}
         >
-          <FilterComponent title="Page" filter={paginateCharacters(2)}>
-            <CharactersTable />
+          <FilterComponent
+            title="Name"
+            filter={filterCharactersByNameStartsWith}
+          >
+            <FilterComponent title="Page" filter={paginateCharacters(2)}>
+              <CharactersTable characters={characters} />
+            </FilterComponent>
           </FilterComponent>
         </FilterComponent>
 
@@ -78,7 +88,7 @@ function App() {
         <FilterChain
           title="Name"
           characters={characters}
-          filter={filterCharactersByName}
+          filter={filterCharactersByNameStartsWith}
         >
           {startsWithName => (
             <FilterChain
@@ -156,27 +166,40 @@ const CharactersTable = ({ characters }) => {
 };
 
 const FilterComponent = ({
-  children,
   title,
-  characters,
+  defaultValue,
+  children,
+  arrayProp = "characters",
   filter = id => id
 }) => {
-  const [inputValue, setInputValue] = useState();
+  const [inputValue, setInputValue] = useState(defaultValue);
 
-  const filterChangedHandler = event => {
-    setInputValue(event.target.value);
+  const childrenCharacters = children.props[arrayProp];
+  const childrenFilter = children.props.filter;
+
+  const childrenProps = {
+    ...children.props,
+    arrayProp,
+    filter:
+      childrenFilter &&
+      ((children, value) =>
+        childrenFilter(filter(children, inputValue), value)),
+    characters: childrenCharacters && filter(childrenCharacters, inputValue)
   };
 
   return (
-    <React.Fragment>
+    <>
       <div>
         {title}
-        <input onChange={filterChangedHandler} />
+        <input
+          value={inputValue}
+          onChange={event => {
+            setInputValue(event.target.value);
+          }}
+        />
       </div>
-      {React.cloneElement(children, {
-        characters: filter(characters || children.props.characters, inputValue)
-      })}
-    </React.Fragment>
+      {React.cloneElement(children, childrenProps)}
+    </>
   );
 };
 
@@ -188,13 +211,13 @@ const FilterChain = ({ children, title, characters, filter = id => id }) => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <div>
         {title}
         <input onChange={filterChangedHandler} />
       </div>
       {children(filter(characters || children.props.characters, inputValue))}
-    </React.Fragment>
+    </>
   );
 };
 
