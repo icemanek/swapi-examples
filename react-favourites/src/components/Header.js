@@ -42,6 +42,12 @@ const Header = () => {
         <StyledAnchorLink exact as={NavLink} to="/films">
           Lista Filmów
         </StyledAnchorLink>
+        <StyledAnchorLink exact as={NavLink} to="/sign-up">
+          Rejestracja
+        </StyledAnchorLink>
+        <StyledAnchorLink exact as={NavLink} to="/sign-in">
+          Logowanie
+        </StyledAnchorLink>
       </StyledNavigation>
     </StyledHeader>
   );

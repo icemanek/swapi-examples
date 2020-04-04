@@ -3,7 +3,7 @@ import variables from "./variables";
 import "bulma/css/bulma.min.css";
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css?family=Baloo+Da+2:400,500,700&display=swap');
+  @import url('https://fonts.googleapis.com/css?family=Baloo+Da+2&display=swap');
   * {
     padding: 0;
     margin: 0;
