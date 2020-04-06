@@ -3,11 +3,9 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 import Like from "./Like";
-import Loading from "./Loading";
 import { useFilmReleaseOrdering } from "./useOrdering";
 
-const FilmListBody = ({ films, pageNo = 0, pageSize = 7 }) => {
-  
+const FilmListBody = ({ films, pageNo = 0, pageSize = 3 }) => {
   const mappedFilms = films.filter(
     (_, index) => index >= pageNo * pageSize && index < (pageNo + 1) * pageSize
   );
@@ -36,28 +34,18 @@ const FilmListBody = ({ films, pageNo = 0, pageSize = 7 }) => {
   );
 };
 
-const FilmList = () => {
+const FilmList = ({ initalFilms = [] }) => {
   const [pageNo, changePage] = useState(0);
-
-  const [films, setFilms] = useState(undefined);
+  const [titleToSearch, setTitleToSearch] = useState("");
+  const [films, setFilms] = useState(initalFilms);
 
   useEffect(() => {
-    fetch("https://swapi.co/api/films", { mode: "cors" })
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw Error("Failed to fetch data from swapi");
-        }
-      })
-      .then(json => {
-        return json.results;
-      })
-      .then(setFilms)
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
+    console.log("UseEfect");
+    const filteredFilms = initalFilms.filter((film) =>
+      film.title.includes(titleToSearch)
+    );
+    setFilms(filteredFilms);
+  }, [titleToSearch, initalFilms]);
 
   const changeSortOrder = useFilmReleaseOrdering(films, setFilms);
 
@@ -73,6 +61,9 @@ const FilmList = () => {
                 className="input"
                 type="text"
                 placeholder="Wyszukaj po tytule"
+                onChange={(e) => {
+                  setTitleToSearch(e.target.value);
+                }}
               />
             </div>
           </div>
@@ -140,25 +131,25 @@ const FilmList = () => {
           </button>
         </div>
       </div>
-      {films ? (
-        <table className="table is-striped is-hoverable is-fullwidth is-narrow">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th onClick={() => changeSortOrder("title")}>Title</th>
-              <th onClick={() => changeSortOrder("episode_id")}>Episode ID</th>
-              <th onClick={() => changeSortOrder("opening_crawl")}>Opening crawl</th>
-              <th onClick={() => changeSortOrder("director")}>Director</th>
-              <th onClick={() => changeSortOrder("producer")}>Producer</th>
-              <th onClick={() => changeSortOrder("release_date")}>Release Date</th>
-              <th>Like</th>
-            </tr>
-          </thead>
-          <FilmListBody films={films} pageNo={pageNo} />
-        </table>
-      ) : (
-        <Loading></Loading>
-      )}
+      <table className="table is-striped is-hoverable is-fullwidth is-narrow">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th onClick={() => changeSortOrder("title")}>Title</th>
+            <th onClick={() => changeSortOrder("episode_id")}>Episode ID</th>
+            <th onClick={() => changeSortOrder("opening_crawl")}>
+              Opening crawl
+            </th>
+            <th onClick={() => changeSortOrder("director")}>Director</th>
+            <th onClick={() => changeSortOrder("producer")}>Producer</th>
+            <th onClick={() => changeSortOrder("release_date")}>
+              Release Date
+            </th>
+            <th>Like</th>
+          </tr>
+        </thead>
+        <FilmListBody films={films} pageNo={pageNo} />
+      </table>
     </StyledWrapper>
   );
 };

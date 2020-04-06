@@ -25,7 +25,7 @@ const cookieSessionStorage = {
   }
 }
 
-const storageToUse = cookieStorage;
+const storageToUse = localStorage;
 
 const EpisodeLike = ({ episodeId }) => {
   const isLiked = storageToUse.getItem("Episode" + episodeId) === "true";
