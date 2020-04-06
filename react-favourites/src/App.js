@@ -9,26 +9,41 @@ import Home from "./components/Home";
 import Loading from "./components/Loading";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
-import fakeData from "./fakeData"; 
+import fakeData from "./fakeData";
+
+const getFakeResults = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(fakeData);
+    }, 2000);
+  });
+};
+
+const getApiResults = () => {
+  return fetch("https://swapi.co/api/films", { mode: "cors" }).then(
+    (response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw Error("Failed to fetch data from swapi");
+      }
+    }
+  );
+};
+
+const getFilms = (fake) => {
+  if (!fake) {
+    return getFakeResults();
+  } else {
+    return getApiResults();
+  }
+};
 
 const FilmListWithLoader = () => {
   const [films, setFilms] = useState(undefined);
 
   useEffect(() => {
-
-    /* fetch("https://swapi.co/api/films", { mode: "cors" }).then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw Error("Failed to fetch data from swapi");
-        }
-      })*/
-
-    new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(fakeData)
-      }, 2000);
-    })
+    getFilms()
       .then((json) => {
         return json.results;
       })
@@ -41,7 +56,7 @@ const FilmListWithLoader = () => {
   if (films) {
     return <FilmList initalFilms={films} />;
   } else {
-    return <Loading />
+    return <Loading />;
   }
 };
 
@@ -52,11 +67,11 @@ const App = () => {
       <BrowserRouter>
         <Header></Header>
         <Switch>
-          <Route path="/" exact strict component={Home}></Route>
-          <Route path="/films" exact strict component={FilmListWithLoader}></Route>
-          <Route path="/films/:id" exact strict component={FilmDetails}></Route>
-          <Route path="/sign-up" exact strict component={SignUp}></Route>
-          <Route path="/sign-in" exact strict component={SignIn}></Route>
+          <Route path="/" exact strict component={Home} />
+          <Route path="/films" exact strict component={FilmListWithLoader} />
+          <Route path="/films/:id" exact strict component={FilmDetails} />
+          <Route path="/sign-up" exact strict component={SignUp} />
+          <Route path="/sign-in" exact strict component={SignIn} />
           <Redirect to="/" />
         </Switch>
       </BrowserRouter>
