@@ -4,8 +4,9 @@
   "description": "Star Wars React Table example",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:favourites": "(cd react-favourites &&npm install) && (cd react-favourites && npm run build)"
+  }, 
   "author": "",
   "license": "ISC",
   "dependencies": {
