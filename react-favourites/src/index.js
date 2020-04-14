@@ -3,8 +3,9 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import "bulma/css/bulma.min.css";
 import "bulma-calendar/dist/css/bulma-calendar.min.css";
-import * as css from "./App.css"
+import "./styles/main.scss";
 
 ReactDOM.render(
   <React.StrictMode>

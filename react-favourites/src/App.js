@@ -3,7 +3,6 @@ import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
 import FilmDetails from "./components/FilmDetails";
 import FilmList from "./components/FilmList";
-import GlobalStyle from "./GlobalStyles";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import Loading from "./components/Loading";
@@ -63,7 +62,6 @@ const FilmListWithLoader = () => {
 const App = () => {
   return (
     <div className="container">
-      <GlobalStyle />
       <BrowserRouter>
         <Header></Header>
         <Switch>

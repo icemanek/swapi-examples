@@ -1,0 +1,21 @@
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  a {
+    text-decoration: none;
+    text-transform: uppercase;
+    color: $fontColor;
+    font-weight: bold;
+    transition: 0.3s;
+    padding: 2rem;
+    &.active,
+    &:hover {
+      color: $activeColor;
+    }
+  }
+  .image-container {
+    width: 500px;
+  }
+}

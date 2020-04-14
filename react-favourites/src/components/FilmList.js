@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 import Like from "./Like";
@@ -50,7 +49,7 @@ const FilmList = ({ initalFilms = [] }) => {
   const changeSortOrder = useFilmReleaseOrdering(films, setFilms);
 
   return (
-    <StyledWrapper>
+    <div className="film-list">
       <h1>Film List</h1>
       <div className="columns">
         <div className="column">
@@ -150,12 +149,8 @@ const FilmList = ({ initalFilms = [] }) => {
         </thead>
         <FilmListBody films={films} pageNo={pageNo} />
       </table>
-    </StyledWrapper>
+    </div>
   );
 };
 
 export default FilmList;
-
-const StyledWrapper = styled.div`
-  padding-bottom: 10rem;
-`;
