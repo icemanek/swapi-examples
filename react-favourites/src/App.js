@@ -60,6 +60,31 @@ const FilmListWithLoader = () => {
 };
 
 const App = () => {
+  const [user, setUser] = useState(undefined);
+
+  useEffect(() => {
+    const userString = localStorage.getItem("gotrue.user");
+    if (userString) {
+      const user = JSON.parse(userString);
+      const headers = {
+        Authorization: `Bearer ${user.token.access_token}`,
+      };
+      fetch("http://sw-examples.codingtree.pl/.netlify/identity/user", {
+        headers,
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error(response);
+          }
+        })
+        .then((user) => {
+          console.log(user);
+        });
+    }
+  }, []);
+
   return (
     <div className="container">
       <BrowserRouter>
