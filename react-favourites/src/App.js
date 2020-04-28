@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import Firebase from "firebase";
 
+import AuthContext from "./AuthContext";
+import fakeData from "./fakeData";
 import FilmDetails from "./components/FilmDetails";
 import FilmList from "./components/FilmList";
+import firebaseConfig from "./firebaseConfig";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import Loading from "./components/Loading";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
-import fakeData from "./fakeData";
+
+Firebase.initializeApp(firebaseConfig);
 
 const getFakeResults = () => {
   return new Promise((resolve, reject) => {
@@ -69,7 +74,7 @@ const App = () => {
       const headers = {
         Authorization: `Bearer ${user.token.access_token}`,
       };
-      fetch("http://sw-examples.codingtree.pl/.netlify/identity/user", {
+      fetch("http://swapi-examples.codingtree.pl/.netlify/identity/user", {
         headers,
       })
         .then((response) => {
@@ -80,25 +85,36 @@ const App = () => {
           }
         })
         .then((user) => {
-          console.log(user);
+          Firebase.firestore()
+            .collection("users")
+            .doc(user.id)
+            .set(user)
+            .then((value) => {
+              setUser(user);
+            });
+        })
+        .catch((err) => {
+          console.error("Error while fetching user", err);
         });
     }
   }, []);
 
   return (
-    <div className="container">
-      <BrowserRouter>
-        <Header></Header>
-        <Switch>
-          <Route path="/" exact strict component={Home} />
-          <Route path="/films" exact strict component={FilmListWithLoader} />
-          <Route path="/films/:id" exact strict component={FilmDetails} />
-          <Route path="/sign-up" exact strict component={SignUp} />
-          <Route path="/sign-in" exact strict component={SignIn} />
-          <Redirect to="/" />
-        </Switch>
-      </BrowserRouter>
-    </div>
+    <AuthContext.Provider value={user}>
+      <div className="container">
+        <BrowserRouter>
+          <Header></Header>
+          <Switch>
+            <Route path="/" exact strict component={Home} />
+            <Route path="/films" exact strict component={FilmListWithLoader} />
+            <Route path="/films/:id" exact strict component={FilmDetails} />
+            <Route path="/sign-up" exact strict component={SignUp} />
+            <Route path="/sign-in" exact strict component={SignIn} />
+            <Redirect to="/" />
+          </Switch>
+        </BrowserRouter>
+      </div>
+    </AuthContext.Provider>
   );
 };
 
